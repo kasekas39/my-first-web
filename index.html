@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viktor Restorations | Interior Specialist</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #d4af37; --light: #f4f4f4; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; line-height: 1.6; color: #333; overflow-x: hidden; width: 100%; }
+        header { background: #fff; padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        nav a { margin-left: 20px; text-decoration: none; color: var(--primary); font-weight: 600; }
+        .hero { height: 80vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1200') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 10px; }
+        .hero p { font-size: 1.2rem; max-width: 600px; }
+        .container { padding: 4rem 5%; }
+        .gallery-item { max-width: 800px; margin: 2rem auto; position: relative; overflow: hidden; border-radius: 8px; }
+        .comparison-slider { position: relative; width: 100%; aspect-ratio: 16/9; }
+        .comparison-slider img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .img-after { z-index: 1; }
+        .img-before { z-index: 2; clip-path: inset(0 50% 0 0); }
+        .slider-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; -webkit-appearance: none; appearance: none; z-index: 3; cursor: col-resize; margin: 0; touch-action: pan-y; }
+        .slider-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #fff; z-index: 2; pointer-events: none; }
+        .arrow-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.7); border: none; color: var(--primary); font-size: 2rem; padding: 10px 15px; cursor: pointer; border-radius: 4px; z-index: 4; transition: background 0.3s; }
+        .arrow-btn:hover { background: rgba(255,255,255,0.9); }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
+        .photo-counter { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: #fff; padding: 5px 12px; border-radius: 20px; z-index: 4; font-size: 0.9rem; }
+        .testimonials-section { background: var(--light); }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .testimonial-card { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid var(--accent); }
+        .testimonial-card h4 { margin: 0 0 0.5rem 0; color: var(--primary); }
+        .testimonial-card .rating { color: var(--accent); margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .testimonial-card p { margin: 0; color: #666; font-style: italic; }
+        .comment-form { background: #fff; padding: 2rem; border-radius: 8px; margin-top: 3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 600px; margin-left: auto; margin-right: auto; }
+        .comment-form h3 { color: var(--primary); margin-top: 0; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--primary); font-weight: 600; }
+        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; font-size: 1rem; }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 5px rgba(212, 175, 55, 0.3); }
+        .submit-btn { background: var(--primary); color: #fff; padding: 0.75rem 2rem; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; transition: background 0.3s; }
+        .submit-btn:hover { background: var(--accent); color: var(--primary); }
+        .user-comments { margin-top: 3rem; }
+        .user-comment { background: #f9f9f9; padding: 1.5rem; border-radius: 4px; margin-bottom: 1rem; border-left: 4px solid var(--primary); }
+        .user-comment h5 { margin: 0 0 0.5rem 0; color: var(--primary); }
+        .user-comment .comment-date { font-size: 0.85rem; color: #999; margin-bottom: 0.5rem; }
+        .user-comment p { margin: 0; color: #666; }
+        /* Added: left-side job list layout for slider */
+        .gallery-row { display: flex; gap: 2rem; align-items: center; justify-content: center; flex-wrap: nowrap; }
+        .job-list { width: 220px; background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid var(--accent); }
+        .job-list h3 { margin: 0 0 0.5rem 0; color: var(--primary); font-size: 1.05rem; text-align: left; }
+        .job-list ul { padding-left: 1rem; margin: 0; color: #444; list-style: disc; }
+        .job-list li { margin-bottom: 0.5rem; font-weight: 600; }
+        @media (max-width: 800px) {
+            .gallery-row { flex-direction: column; }
+            .job-list { width: 100%; order: 2; }
+            .comparison-slider { order: 1; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo"><strong>Viktor</strong> decorations</div>
+        <nav><a href="#work">Our Work</a><a href="#contact">Contact</a></nav>
+    </header>
+
+    <section class="hero">
+        <h1>Reviving Elegance</h1>
+        <p>Specializing in high-end interior restoration, bringing history back to your living space with precision and care.</p>
+    </section>
+
+    <section id="work" class="container">
+        <h2 style="text-align:center">Transformations</h2>
+        <div class="gallery-item">
+            <div class="gallery-row">
+                <aside class="job-list" aria-label="Services">
+                    <h3>Services</h3>
+                    <ul>
+                        <li>painting/decorating</li>
+                        <li>wallpappering</li>
+                        <li>coulking</li>
+                        <li>siliconing</li>
+                        <li>sandings</li>
+                        <li>fillings</li>
+                    </ul>
+                </aside>
+                <div class="comparison-slider">
+                 <!-- Replace with actual project images -->
+                 <img class="img-after" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200" alt="After Restoration">
+                 <img class="img-before" src="https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=1200" alt="Before Restoration">
+                 <div class="slider-line" id="line"></div>
+                 <input type="range" min="0" max="100" value="50" class="slider-input" oninput="slide(this)">
+                 <button class="arrow-btn arrow-left" onclick="prevPhoto()">❮</button>
+                 <button class="arrow-btn arrow-right" onclick="nextPhoto()">❯</button>
+                 <div class="photo-counter"><span id="current">1</span> / <span id="total">3</span></div>
+                </div>
+            </div>
+             <p style="text-align: center; margin-top: 1rem;" id="photo-title">Historic Parlor - Wood & Plaster Restoration</p>
+         </div>
+    </section>
+
+    <section id="testimonials" class="container testimonials-section">
+        <h2 style="text-align:center">Customer Comments</h2>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <h4>Sarah Mitchell</h4>
+                <div class="rating">★★★★★</div>
+                <p>"Viktor's team transformed our 1920s living room beautifully. Their attention to detail and respect for the original architecture was outstanding!"</p>
+            </div>
+            <div class="testimonial-card">
+                <h4>James Richardson</h4>
+                <div class="rating">★★★★★</div>
+                <p>"Professional, punctual, and incredibly skilled. They restored our antique plasterwork to its original glory. Highly recommended!"</p>
+            </div>
+            <div class="testimonial-card">
+                <h4>Emily Thornton</h4>
+                <div class="rating">★★★★★</div>
+                <p>"Best decision we made for our home. The restoration work was meticulous and the final result exceeded our expectations."</p>
+            </div>
+            <div class="testimonial-card">
+                <h4>David Chen</h4>
+                <div class="rating">★★★★★</div>
+                <p>"Exceptional craftsmanship and dedication. Viktor understood our vision perfectly and delivered beyond what we imagined."</p>
+            </div>
+        </div>
+
+        <div class="comment-form">
+            <h3>Share Your Experience</h3>
+            <form onsubmit="submitComment(event)">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="comment">Your Comment</label>
+                    <textarea id="comment" name="comment" required placeholder="Share your experience with Viktor Restorations..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Submit Comment</button>
+            </form>
+        </div>
+
+        <div class="user-comments" id="userComments"></div>
+    </section>
+
+    <footer id="contact">
+        <h3>Master Your Interiors</h3>
+        <p>Email: contact@artisanrestore.com | Tel: 123-456-789</p>
+    </footer>
+
+    <script>
+        const projects = [
+            {
+                before: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?auto=format&fit=crop&w=1200',
+                after: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200',
+                title: 'Historic Parlor - Wood & Plaster Restoration'
+            },
+            {
+                before: 'https://images.unsplash.com/photo-1540932239986-310128078ceb?auto=format&fit=crop&w=1200',
+                after: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200',
+                title: 'Victorian Kitchen - Complete Renovation'
+            },
+            {
+                before: 'https://images.unsplash.com/photo-1576228542413-d12c3c3fc98e?auto=format&fit=crop&w=1200',
+                after: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200',
+                title: 'Master Bedroom - Elegant Restoration'
+            }
+        ];
+
+        let currentIndex = 0;
+
+        function loadProject(index) {
+            const project = projects[index];
+            document.querySelector('.img-before').src = project.before;
+            document.querySelector('.img-after').src = project.after;
+            document.getElementById('photo-title').textContent = project.title;
+            document.getElementById('current').textContent = index + 1;
+            document.querySelector('.slider-input').value = 50;
+            slide(document.querySelector('.slider-input'));
+        }
+
+        function nextPhoto() {
+            currentIndex = (currentIndex + 1) % projects.length;
+            loadProject(currentIndex);
+        }
+
+        function prevPhoto() {
+            currentIndex = (currentIndex - 1 + projects.length) % projects.length;
+            loadProject(currentIndex);
+        }
+
+        function slide(slider) {
+            const container = slider.parentElement;
+            const beforeImg = container.querySelector('.img-before');
+            const line = container.querySelector('.slider-line');
+            beforeImg.style.clipPath = `inset(0 ${100 - slider.value}% 0 0)`;
+            line.style.left = `${slider.value}%`;
+        }
+
+        document.getElementById('total').textContent = projects.length;
+
+        function submitComment(event) {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const comment = document.getElementById('comment').value;
+            
+            const userCommentsContainer = document.getElementById('userComments');
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'user-comment';
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            commentDiv.innerHTML = `
+                <h5>${name}</h5>
+                <div class="comment-date">${date}</div>
+                <p>${comment}</p>
+            `;
+            userCommentsContainer.insertBefore(commentDiv, userCommentsContainer.firstChild);
+            
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('comment').value = '';
+        }
+    </script>
+</body>
+</html>
